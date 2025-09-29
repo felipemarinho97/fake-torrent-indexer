@@ -34,7 +34,7 @@ func HandleSearch(w http.ResponseWriter, r *http.Request) {
 		results = append(results, schema.IndexedTorrent{
 			Title:         fmt.Sprintf("%s (brazilian, eng)", title),
 			OriginalTitle: title,
-			Details:       "Your IP is blocked. Please, deploy your torrent-indexer (https://github.com/felipemarinho97/torrent-indexer) instance.",
+			Details:       "This is for testing purposes. Please, deploy your torrent-indexer (https://github.com/felipemarinho97/torrent-indexer) instance.",
 			Year:          getRandomYear(),
 			IMDB:          fmt.Sprintf("tt%07d", rng.Intn(9999999)),
 			Audio:         []schema.Audio{schema.AudioEnglish, schema.AudioPortuguese},
