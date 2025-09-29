@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -35,7 +36,7 @@ func HandleSearch(w http.ResponseWriter, r *http.Request) {
 		results = append(results, schema.IndexedTorrent{
 			Title:         fmt.Sprintf("%s (brazilian, eng)", title),
 			OriginalTitle: title,
-			Details:       "This is for testing purposes. Please, deploy your torrent-indexer (https://github.com/felipemarinho97/torrent-indexer) instance.",
+			Details:       getDetailsMessage(),
 			Year:          getRandomYear(),
 			IMDB:          fmt.Sprintf("tt%07d", rng.Intn(9999999)),
 			Audio:         []schema.Audio{schema.AudioEnglish, schema.AudioPortuguese},
@@ -167,4 +168,14 @@ func generateRandomInfoHash(r *rand.Rand) string {
 		hash[i] = hexChars[r.Intn(len(hexChars))]
 	}
 	return string(hash)
+}
+
+// getDetailsMessage returns the details message from environment variable or default
+func getDetailsMessage() string {
+	customMessage := os.Getenv("DETAILS_MESSAGE")
+	if customMessage != "" {
+		return customMessage
+	}
+	// Default message
+	return "This is for testing purposes. Please, deploy your torrent-indexer (https://github.com/felipemarinho97/torrent-indexer) instance."
 }
