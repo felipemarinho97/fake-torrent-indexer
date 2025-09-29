@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
@@ -96,8 +97,18 @@ func generateReleaseTitle(query string, seed int) string {
 		baseTitle = "Unknown"
 	}
 
-	// Capitalize each word in the base title
-	baseTitle = strings.Title(baseTitle)
+	// Simple title case conversion (first letter of each word uppercase)
+	words := strings.Fields(baseTitle)
+	for i, word := range words {
+		if len(word) > 0 {
+			words[i] = strings.ToUpper(string(word[0])) + strings.ToLower(word[1:])
+		}
+	}
+	baseTitle = strings.Join(words, " ")
+
+	// Check if query already contains a 4-digit year (1900-2099)
+	yearRegex := regexp.MustCompile(`\b(19|20)\d{2}\b`)
+	hasYear := yearRegex.MatchString(query)
 
 	// Random qualities
 	qualities := []string{"720p", "1080p", "2160p", "4K"}
@@ -114,14 +125,18 @@ func generateReleaseTitle(query string, seed int) string {
 		episodeInfo = fmt.Sprintf(".S%02dE%02d", season, episode)
 	}
 
-	// Random year
-	year := 2010 + r.Intn(15)
+	// Only add year if query doesn't already contain one
+	yearStr := ""
+	if !hasYear {
+		year := 2010 + r.Intn(15)
+		yearStr = fmt.Sprintf(".%d", year)
+	}
 
 	// Build the release name
-	title := fmt.Sprintf("%s%s.%d.%s.%s.%s-%s",
+	title := fmt.Sprintf("%s%s%s.%s.%s.%s-%s",
 		strings.ReplaceAll(baseTitle, " ", "."),
 		episodeInfo,
-		year,
+		yearStr,
 		qualities[r.Intn(len(qualities))],
 		sources[r.Intn(len(sources))],
 		codecs[r.Intn(len(codecs))],
